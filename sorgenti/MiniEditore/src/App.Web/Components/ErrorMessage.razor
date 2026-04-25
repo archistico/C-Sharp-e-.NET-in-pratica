@@ -1,0 +1,10 @@
+@namespace App.Web.Components
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <div class="alert">@Message</div>
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+}

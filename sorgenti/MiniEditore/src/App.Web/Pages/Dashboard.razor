@@ -1,0 +1,29 @@
+@page "/"
+@inject DashboardApiClient DashboardClient
+
+<PageHeader Title="Dashboard" Subtitle="Sintesi del gestionale" />
+<LoadingPanel IsLoading="isLoading" />
+<ErrorMessage Message="@error" />
+
+@if (!isLoading && summary is not null)
+{
+    <div class="dashboard-grid">
+        <div class="card"><h3>Libri attivi</h3><strong>@summary.NumeroLibriAttivi</strong></div>
+        <div class="card"><h3>Autori</h3><strong>@summary.NumeroAutori</strong></div>
+        <div class="card"><h3>Clienti</h3><strong>@summary.NumeroClienti</strong></div>
+        <div class="card"><h3>Documenti mese</h3><strong>@summary.NumeroDocumentiMese</strong></div>
+        <div class="card"><h3>Totale mese</h3><strong><MoneyDisplay Value="summary.TotaleDocumentiMese" /></strong></div>
+    </div>
+}
+
+@code {
+    private bool isLoading = true;
+    private string? error;
+    private DashboardSummaryDto? summary;
+    protected override async Task OnInitializedAsync()
+    {
+        try { summary = await DashboardClient.GetSummaryAsync(); }
+        catch (Exception ex) { error = ex.Message; }
+        finally { isLoading = false; }
+    }
+}

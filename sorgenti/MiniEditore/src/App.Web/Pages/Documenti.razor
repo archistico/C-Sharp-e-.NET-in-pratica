@@ -1,0 +1,11 @@
+@page "/documenti"
+@inject DocumentiApiClient DocumentiClient
+<PageHeader Title="Documenti" Subtitle="Elenco documenti"><a class="btn btn-primary" href="/documenti/nuovo">Nuovo documento</a></PageHeader>
+<LoadingPanel IsLoading="isLoading" /><ErrorMessage Message="@error" />
+@if (!isLoading)
+{
+<div class="card"><table class="table"><thead><tr><th>Numero</th><th>Data</th><th>Cliente</th><th>Stato</th><th>Totale</th><th></th></tr></thead><tbody>
+@foreach (var d in documenti){ <tr><td>@d.Numero</td><td>@d.Data</td><td>@d.Cliente</td><td>@d.Stato</td><td><MoneyDisplay Value="d.TotaleDocumento" /></td><td><a class="btn btn-secondary" href="/documenti/@d.Id">Dettaglio</a></td></tr> }
+</tbody></table></div>
+}
+@code { private bool isLoading=true; private string? error; private IReadOnlyList<DocumentoListItemDto> documenti=Array.Empty<DocumentoListItemDto>(); protected override async Task OnInitializedAsync(){ try{ documenti=await DocumentiClient.GetDocumentiAsync(); }catch(Exception ex){error=ex.Message;}finally{isLoading=false;} } }

@@ -1,0 +1,12 @@
+@page "/autori"
+@inject CatalogoApiClient CatalogoClient
+<PageHeader Title="Autori" Subtitle="Gestione autori"><a class="btn btn-primary" href="/autori/nuovo">Nuovo autore</a></PageHeader>
+<LoadingPanel IsLoading="isLoading" /><ErrorMessage Message="@error" />
+@if (!isLoading)
+{
+    <div class="card"><table class="table"><thead><tr><th>Nome</th><th>Cognome</th><th>Email</th><th></th></tr></thead><tbody>
+    @foreach (var a in autori)
+    { <tr><td>@a.Nome</td><td>@a.Cognome</td><td>@a.Email</td><td><a class="btn btn-secondary" href="/autori/@a.Id">Modifica</a></td></tr> }
+    </tbody></table></div>
+}
+@code { private bool isLoading = true; private string? error; private IReadOnlyList<AutoreDto> autori = Array.Empty<AutoreDto>(); protected override async Task OnInitializedAsync(){ try{ autori = await CatalogoClient.GetAutoriAsync(); } catch(Exception ex){ error = ex.Message; } finally{ isLoading = false; } } }

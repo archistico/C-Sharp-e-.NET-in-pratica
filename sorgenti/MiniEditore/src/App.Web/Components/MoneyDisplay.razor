@@ -1,0 +1,8 @@
+@namespace App.Web.Components
+@using System.Globalization
+
+<div class="money">@Value.ToString("C", CultureInfo.GetCultureInfo("it-IT"))</div>
+
+@code {
+    [Parameter] public decimal Value { get; set; }
+}

@@ -1,0 +1,30 @@
+@namespace App.Web.Components
+
+<button class="btn @CssClass" @onclick="OnClick">@CurrentText</button>
+
+@code {
+    [Parameter] public string Text { get; set; } = "Delete";
+    [Parameter] public string ConfirmText { get; set; } = "Confirm?";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public string CssClass { get; set; } = "btn-secondary";
+
+    private bool _confirming;
+
+    private string CurrentText => _confirming ? ConfirmText : Text;
+
+    private async Task OnClick()
+    {
+        if (!_confirming)
+        {
+            _confirming = true;
+            StateHasChanged();
+            await Task.Delay(2500);
+            _confirming = false;
+            StateHasChanged();
+            return;
+        }
+
+        await OnConfirm.InvokeAsync(null);
+        _confirming = false;
+    }
+}

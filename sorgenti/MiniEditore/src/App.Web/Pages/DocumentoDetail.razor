@@ -1,0 +1,31 @@
+@page "/documenti/{Id:int}"
+@inject DocumentiApiClient DocumentiClient
+@inject NavigationManager Navigation
+<PageHeader Title="Documento" Subtitle="Dettaglio documento" />
+<LoadingPanel IsLoading="isLoading" /><ErrorMessage Message="@error" />
+@if (!isLoading && documento is not null)
+{
+<div class="card">
+<p><strong>Numero:</strong> @documento.Numero</p>
+<p><strong>Data:</strong> @documento.Data</p>
+<p><strong>Cliente Id:</strong> @documento.ClienteId</p>
+<p><strong>Tipo:</strong> @documento.TipoDocumento</p>
+<p><strong>Stato:</strong> @documento.Stato</p>
+<p><strong>Totale imponibile:</strong> <MoneyDisplay Value="documento.TotaleImponibile" /></p>
+<p><strong>Sconto:</strong> <MoneyDisplay Value="documento.TotaleSconto" /></p>
+<p><strong>Totale:</strong> <MoneyDisplay Value="documento.TotaleDocumento" /></p>
+@if (documento.Stato == global::App.Domain.Documenti.StatoDocumento.Bozza)
+{
+    <button class="btn btn-primary" @onclick="ConfermaAsync">Conferma</button>
+}
+@if (documento.Stato != global::App.Domain.Documenti.StatoDocumento.Annullato)
+{
+    <button class="btn btn-danger" @onclick="AnnullaAsync">Annulla</button>
+}
+<a class="btn btn-secondary" href="/documenti">Torna</a>
+</div>
+<div class="card"><h2>Righe</h2><table class="table"><thead><tr><th>Descrizione</th><th>Quantità</th><th>Prezzo</th><th>Sconto %</th><th>Totale</th></tr></thead><tbody>
+@foreach (var r in documento.Righe){ <tr><td>@r.Descrizione</td><td>@r.Quantita</td><td><MoneyDisplay Value="r.PrezzoUnitario" /></td><td>@r.ScontoPercentuale</td><td><MoneyDisplay Value="r.TotaleRiga" /></td></tr> }
+</tbody></table></div>
+}
+@code { [Parameter] public int Id {get;set;} private bool isLoading=true; private string? error; private DocumentoDetailDto? documento; protected override async Task OnInitializedAsync(){ await LoadAsync(); } private async Task LoadAsync(){ try{ documento=await DocumentiClient.GetDocumentoAsync(Id); if(documento is null) error="Documento non trovato"; }catch(Exception ex){error=ex.Message;}finally{isLoading=false;} } private async Task ConfermaAsync(){ var r=await DocumentiClient.ConfermaDocumentoAsync(Id); if(!r.Success){error=r.Error; return;} Navigation.NavigateTo($"/documenti/{Id}", true); } private async Task AnnullaAsync(){ var r=await DocumentiClient.AnnullaDocumentoAsync(Id); if(!r.Success){error=r.Error; return;} Navigation.NavigateTo($"/documenti/{Id}", true); } }

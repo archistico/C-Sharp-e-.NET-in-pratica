@@ -1,0 +1,11 @@
+@page "/clienti"
+@inject ClientiApiClient ClientiClient
+<PageHeader Title="Clienti" Subtitle="Gestione clienti"><a class="btn btn-primary" href="/clienti/nuovo">Nuovo cliente</a></PageHeader>
+<LoadingPanel IsLoading="isLoading" /><ErrorMessage Message="@error" />
+@if (!isLoading)
+{
+<div class="card"><table class="table"><thead><tr><th>Ragione sociale</th><th>Email</th><th>Telefono</th><th>Attivo</th><th></th></tr></thead><tbody>
+@foreach (var c in clienti){ <tr><td>@c.RagioneSociale</td><td>@c.Email</td><td>@c.Telefono</td><td>@(c.Attivo ? "Sì" : "No")</td><td><a class="btn btn-secondary" href="/clienti/@c.Id">Modifica</a></td></tr> }
+</tbody></table></div>
+}
+@code { private bool isLoading=true; private string? error; private IReadOnlyList<ClienteDto> clienti=Array.Empty<ClienteDto>(); protected override async Task OnInitializedAsync(){ try{ clienti=await ClientiClient.GetClientiAsync(); }catch(Exception ex){error=ex.Message;}finally{isLoading=false;} } }

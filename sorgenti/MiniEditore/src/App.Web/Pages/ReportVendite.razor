@@ -1,0 +1,22 @@
+@page "/report/vendite"
+@inject ReportApiClient ReportClient
+<PageHeader Title="Report vendite" Subtitle="Vendite per periodo" />
+<ErrorMessage Message="@error" />
+<div class="card"><div class="form-grid">
+<div class="form-field"><label>Data da</label><input type="date" @bind="dataDa" /></div>
+<div class="form-field"><label>Data a</label><input type="date" @bind="dataA" /></div>
+</div><button class="btn btn-primary" @onclick="LoadAsync">Aggiorna</button></div>
+<LoadingPanel IsLoading="isLoading" />
+@if (!isLoading)
+{
+<div class="card"><h2>Vendite per libro</h2><table class="table"><thead><tr><th>Libro</th><th>Quantità</th><th>Totale</th></tr></thead><tbody>
+@foreach(var x in perLibro){<tr><td>@x.Titolo</td><td>@x.QuantitaVenduta</td><td><MoneyDisplay Value="x.TotaleVenduto" /></td></tr>}
+</tbody></table></div>
+<div class="card"><h2>Vendite per cliente</h2><table class="table"><thead><tr><th>Cliente</th><th>Totale</th></tr></thead><tbody>
+@foreach(var x in perCliente){<tr><td>@x.Cliente</td><td><MoneyDisplay Value="x.TotaleVenduto" /></td></tr>}
+</tbody></table></div>
+<div class="card"><h2>Riepilogo mensile</h2><table class="table"><thead><tr><th>Anno</th><th>Mese</th><th>Documenti</th><th>Totale</th></tr></thead><tbody>
+@foreach(var x in mensile){<tr><td>@x.Anno</td><td>@x.Mese</td><td>@x.NumeroDocumenti</td><td><MoneyDisplay Value="x.TotaleVenduto" /></td></tr>}
+</tbody></table></div>
+}
+@code { private DateOnly dataDa=new(DateTime.Today.Year,1,1); private DateOnly dataA=DateOnly.FromDateTime(DateTime.Today); private bool isLoading; private string? error; private IReadOnlyList<VenditePerLibroDto> perLibro=Array.Empty<VenditePerLibroDto>(); private IReadOnlyList<VenditePerClienteDto> perCliente=Array.Empty<VenditePerClienteDto>(); private IReadOnlyList<RiepilogoMensileDto> mensile=Array.Empty<RiepilogoMensileDto>(); protected override async Task OnInitializedAsync(){ await LoadAsync(); } private async Task LoadAsync(){ isLoading=true; error=null; try{ perLibro=await ReportClient.GetVenditePerLibroAsync(dataDa,dataA); perCliente=await ReportClient.GetVenditePerClienteAsync(dataDa,dataA); mensile=await ReportClient.GetRiepilogoMensileAsync(dataDa,dataA); }catch(Exception ex){error=ex.Message;}finally{isLoading=false;} } }

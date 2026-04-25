@@ -1,0 +1,12 @@
+@page "/autori/nuovo"
+@page "/autori/{Id:int}"
+@inject CatalogoApiClient CatalogoClient
+@inject NavigationManager Navigation
+<PageHeader Title="@(Id.HasValue ? "Modifica autore" : "Nuovo autore")" /><ErrorMessage Message="@error" />
+<div class="card"><div class="form-grid">
+<div class="form-field"><label>Nome</label><input @bind="nome" /></div>
+<div class="form-field"><label>Cognome</label><input @bind="cognome" /></div>
+<div class="form-field"><label>Email</label><input @bind="email" /></div>
+<div class="form-field"><label>Note</label><textarea @bind="note"></textarea></div>
+</div><button class="btn btn-primary" @onclick="SaveAsync">Salva</button> <a class="btn btn-secondary" href="/autori">Annulla</a></div>
+@code { [Parameter] public int? Id { get; set; } private string nome=""; private string cognome=""; private string? email; private string? note; private string? error; protected override async Task OnInitializedAsync(){ if(Id.HasValue){ var a=await CatalogoClient.GetAutoreAsync(Id.Value); if(a is null){error="Autore non trovato"; return;} nome=a.Nome; cognome=a.Cognome; email=a.Email; note=a.Note; } } private async Task SaveAsync(){ if(Id.HasValue){ var r=await CatalogoClient.UpdateAutoreAsync(Id.Value,new UpdateAutoreRequest(nome,cognome,email,note)); if(!r.Success){error=r.Error; return;} } else { var id=await CatalogoClient.CreateAutoreAsync(new CreateAutoreRequest(nome,cognome,email,note)); if(!id.HasValue){error="Creazione non riuscita"; return;} } Navigation.NavigateTo("/autori"); } }

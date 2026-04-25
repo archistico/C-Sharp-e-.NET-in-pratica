@@ -1,0 +1,21 @@
+@page "/documenti/nuovo"
+@inject DocumentiApiClient DocumentiClient
+@inject ClientiApiClient ClientiClient
+@inject CatalogoApiClient CatalogoClient
+@inject NavigationManager Navigation
+<PageHeader Title="Nuovo documento" /><ErrorMessage Message="@error" />
+<div class="card"><div class="form-grid">
+<div class="form-field"><label>Data</label><input type="date" @bind="data" /></div>
+<div class="form-field"><label>Cliente</label><select @bind="clienteId"><option value="0">Seleziona cliente</option>@foreach(var c in clienti){<option value="@c.Id">@c.RagioneSociale</option>}</select></div>
+<div class="form-field"><label>Tipo</label><select @bind="tipoDocumento"><option value="1">Ordine</option><option value="2">Vendita</option><option value="3">Reso</option></select></div>
+</div></div>
+<div class="card"><h2>Aggiungi riga</h2><div class="form-grid">
+<div class="form-field"><label>Libro</label><select @bind="rigaLibroId"><option value="0">Seleziona libro</option>@foreach(var l in libri){<option value="@l.Id">@l.Titolo</option>}</select></div>
+<div class="form-field"><label>Quantità</label><input type="number" @bind="rigaQuantita" /></div>
+<div class="form-field"><label>Prezzo unitario opzionale</label><input type="number" step="0.01" @bind="rigaPrezzo" /></div>
+<div class="form-field"><label>Sconto %</label><input type="number" step="0.01" @bind="rigaSconto" /></div>
+</div><button class="btn btn-secondary" @onclick="AggiungiRiga">Aggiungi riga</button></div>
+<div class="card"><h2>Righe</h2><table class="table"><thead><tr><th>Libro</th><th>Quantità</th><th>Prezzo</th><th>Sconto</th><th></th></tr></thead><tbody>
+@foreach (var r in righe.Select((x,i)=>(x,i))){ <tr><td>@LibroTitolo(r.x.LibroId)</td><td>@r.x.Quantita</td><td>@r.x.PrezzoUnitario</td><td>@r.x.ScontoPercentuale</td><td><button class="btn btn-danger" @onclick="() => RimuoviRiga(r.i)">Rimuovi</button></td></tr> }
+</tbody></table><button class="btn btn-primary" @onclick="SaveAsync">Salva documento</button> <a class="btn btn-secondary" href="/documenti">Annulla</a></div>
+@code { private DateOnly data=DateOnly.FromDateTime(DateTime.Today); private int clienteId; private global::App.Domain.Documenti.TipoDocumento tipoDocumento=global::App.Domain.Documenti.TipoDocumento.Vendita; private IReadOnlyList<ClienteDto> clienti=Array.Empty<ClienteDto>(); private IReadOnlyList<LibroListItemDto> libri=Array.Empty<LibroListItemDto>(); private List<CreateDocumentoRigaRequest> righe=[]; private int rigaLibroId; private int rigaQuantita=1; private decimal? rigaPrezzo; private decimal rigaSconto; private string? error; protected override async Task OnInitializedAsync(){ clienti=await ClientiClient.GetClientiAsync(); libri=await CatalogoClient.GetLibriAsync(); } private void AggiungiRiga(){ error=null; if(rigaLibroId<=0){error="Seleziona un libro."; return;} righe.Add(new CreateDocumentoRigaRequest(rigaLibroId,rigaQuantita,rigaPrezzo,rigaSconto)); rigaLibroId=0; rigaQuantita=1; rigaPrezzo=null; rigaSconto=0; } private void RimuoviRiga(int index){ righe.RemoveAt(index); } private string LibroTitolo(int id)=>libri.FirstOrDefault(x=>x.Id==id)?.Titolo ?? id.ToString(); private async Task SaveAsync(){ error=null; if(clienteId<=0){error="Seleziona un cliente."; return;} if(righe.Count==0){error="Inserisci almeno una riga."; return;} var id=await DocumentiClient.CreateDocumentoAsync(new CreateDocumentoRequest(data,clienteId,tipoDocumento,righe)); if(!id.HasValue){error="Creazione documento non riuscita."; return;} Navigation.NavigateTo($"/documenti/{id.Value}"); } }

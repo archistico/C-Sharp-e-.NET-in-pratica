@@ -1,0 +1,14 @@
+@page "/clienti/nuovo"
+@page "/clienti/{Id:int}"
+@inject ClientiApiClient ClientiClient
+@inject NavigationManager Navigation
+<PageHeader Title="@(Id.HasValue ? "Modifica cliente" : "Nuovo cliente")" /><ErrorMessage Message="@error" />
+<div class="card"><div class="form-grid">
+<div class="form-field"><label>Ragione sociale</label><input @bind="ragioneSociale" /></div>
+<div class="form-field"><label>Email</label><input @bind="email" /></div>
+<div class="form-field"><label>Telefono</label><input @bind="telefono" /></div>
+<div class="form-field"><label>Partita IVA</label><input @bind="partitaIva" /></div>
+<div class="form-field"><label>Codice fiscale</label><input @bind="codiceFiscale" /></div>
+@if (Id.HasValue){<div class="form-field"><label><input type="checkbox" @bind="attivo" /> Attivo</label></div>}
+</div><button class="btn btn-primary" @onclick="SaveAsync">Salva</button> <a class="btn btn-secondary" href="/clienti">Annulla</a></div>
+@code { [Parameter] public int? Id {get;set;} private string ragioneSociale=""; private string? email; private string? telefono; private string? partitaIva; private string? codiceFiscale; private bool attivo=true; private string? error; protected override async Task OnInitializedAsync(){ if(Id.HasValue){ var c=await ClientiClient.GetClienteAsync(Id.Value); if(c is null){error="Cliente non trovato"; return;} ragioneSociale=c.RagioneSociale; email=c.Email; telefono=c.Telefono; partitaIva=c.PartitaIva; codiceFiscale=c.CodiceFiscale; attivo=c.Attivo; } } private async Task SaveAsync(){ if(Id.HasValue){ var r=await ClientiClient.UpdateClienteAsync(Id.Value,new UpdateClienteRequest(ragioneSociale,email,telefono,partitaIva,codiceFiscale,attivo)); if(!r.Success){error=r.Error; return;} } else { var id=await ClientiClient.CreateClienteAsync(new CreateClienteRequest(ragioneSociale,email,telefono,partitaIva,codiceFiscale)); if(!id.HasValue){error="Creazione non riuscita"; return;} } Navigation.NavigateTo("/clienti"); } }

@@ -1,0 +1,50 @@
+@page "/libri"
+@inject CatalogoApiClient Api
+@using global::App.Web.Components
+
+<PageHeader Title="Libri">
+    <a class="btn btn-primary" href="/libri/nuovo">Nuovo libro</a>
+</PageHeader>
+
+<LoadingPanel IsLoading="isLoading" />
+<ErrorMessage Message="@error" />
+
+@if (!isLoading && items != null)
+{
+    <div class="card">
+        <table class="table">
+            <thead><tr><th>Titolo</th><th>ISBN</th><th>Prezzo</th><th>Attivo</th><th></th></tr></thead>
+            <tbody>
+                @foreach(var it in items)
+                {
+                    <tr>
+                        <td>@it.Titolo</td>
+                        <td>@it.Isbn</td>
+                        <td>@it.Prezzo</td>
+                        <td>@(it.Attivo?"Sì":"No")</td>
+                        <td><a href="/libri/@it.Id">Modifica</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private bool isLoading = true;
+    private string? error;
+    private IReadOnlyList<LibroListItemDto>? items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            items = await Api.GetLibriAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally { isLoading = false; }
+    }
+}

@@ -1,0 +1,11 @@
+@page "/collane"
+@inject CatalogoApiClient CatalogoClient
+<PageHeader Title="Collane" Subtitle="Gestione collane"><a class="btn btn-primary" href="/collane/nuovo">Nuova collana</a></PageHeader>
+<LoadingPanel IsLoading="isLoading" /><ErrorMessage Message="@error" />
+@if (!isLoading)
+{
+<div class="card"><table class="table"><thead><tr><th>Nome</th><th>Descrizione</th><th>Attiva</th><th></th></tr></thead><tbody>
+@foreach (var c in collane){ <tr><td>@c.Nome</td><td>@c.Descrizione</td><td>@(c.Attiva ? "Sì" : "No")</td><td><a class="btn btn-secondary" href="/collane/@c.Id">Modifica</a></td></tr> }
+</tbody></table></div>
+}
+@code { private bool isLoading=true; private string? error; private IReadOnlyList<CollanaDto> collane=Array.Empty<CollanaDto>(); protected override async Task OnInitializedAsync(){ try{ collane=await CatalogoClient.GetCollaneAsync(); }catch(Exception ex){error=ex.Message;}finally{isLoading=false;} } }

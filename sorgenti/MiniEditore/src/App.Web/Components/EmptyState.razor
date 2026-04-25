@@ -1,0 +1,11 @@
+@namespace App.Web.Components
+
+<div class="empty-state">
+    <h3>@Title</h3>
+    @if (!string.IsNullOrWhiteSpace(Message)) { <p>@Message</p> }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Message { get; set; }
+}

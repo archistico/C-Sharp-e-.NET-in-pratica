@@ -1,0 +1,11 @@
+@page "/collane/nuovo"
+@page "/collane/{Id:int}"
+@inject CatalogoApiClient CatalogoClient
+@inject NavigationManager Navigation
+<PageHeader Title="@(Id.HasValue ? "Modifica collana" : "Nuova collana")" /><ErrorMessage Message="@error" />
+<div class="card"><div class="form-grid">
+<div class="form-field"><label>Nome</label><input @bind="nome" /></div>
+<div class="form-field"><label>Descrizione</label><textarea @bind="descrizione"></textarea></div>
+@if (Id.HasValue){<div class="form-field"><label><input type="checkbox" @bind="attiva" /> Attiva</label></div>}
+</div><button class="btn btn-primary" @onclick="SaveAsync">Salva</button> <a class="btn btn-secondary" href="/collane">Annulla</a></div>
+@code { [Parameter] public int? Id {get;set;} private string nome=""; private string? descrizione; private bool attiva=true; private string? error; protected override async Task OnInitializedAsync(){ if(Id.HasValue){ var c=await CatalogoClient.GetCollanaAsync(Id.Value); if(c is null){error="Collana non trovata"; return;} nome=c.Nome; descrizione=c.Descrizione; attiva=c.Attiva; } } private async Task SaveAsync(){ if(Id.HasValue){ var r=await CatalogoClient.UpdateCollanaAsync(Id.Value,new UpdateCollanaRequest(nome,descrizione,attiva)); if(!r.Success){error=r.Error; return;} } else { var id=await CatalogoClient.CreateCollanaAsync(new CreateCollanaRequest(nome,descrizione)); if(!id.HasValue){error="Creazione non riuscita"; return;} } Navigation.NavigateTo("/collane"); } }
