@@ -8,6 +8,7 @@ namespace MiniInventario.App.Features.Machines;
 public sealed class MachineListViewModel : ViewModelBase
 {
     private readonly MachineService _machineService;
+    private readonly IMessageService _messageService;
 
     private Machine? _selectedMachine;
     private Guid? _editingMachineId;
@@ -20,9 +21,12 @@ public sealed class MachineListViewModel : ViewModelBase
     private string _errorMessage = string.Empty;
     private string _statusMessage = string.Empty;
 
-    public MachineListViewModel(MachineService machineService)
+    public MachineListViewModel(
+        MachineService machineService,
+        IMessageService messageService)
     {
         _machineService = machineService;
+        _messageService = messageService;
 
         Machines = new ObservableCollection<Machine>();
 
@@ -57,9 +61,12 @@ public sealed class MachineListViewModel : ViewModelBase
             if (SetProperty(ref _searchText, value))
             {
                 LoadMachines();
+                OnPropertyChanged(nameof(IsSearchEmpty));
             }
         }
     }
+
+    public bool IsSearchEmpty => string.IsNullOrWhiteSpace(SearchText);
 
     public string Name
     {
@@ -150,6 +157,7 @@ public sealed class MachineListViewModel : ViewModelBase
         Notes = string.Empty;
 
         ClearMessages();
+
         OnPropertyChanged(nameof(FormTitle));
         RaiseCommandStates();
     }
@@ -199,6 +207,7 @@ public sealed class MachineListViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = $"Errore imprevisto: {ex.Message}";
+            _messageService.ShowError("Errore", ex.Message);
         }
     }
 
@@ -210,6 +219,15 @@ public sealed class MachineListViewModel : ViewModelBase
     private void DeleteMachine()
     {
         if (SelectedMachine is null)
+        {
+            return;
+        }
+
+        var confirmed = _messageService.Confirm(
+            "Conferma eliminazione",
+            $"Vuoi eliminare la macchina \"{SelectedMachine.Name}\"?");
+
+        if (!confirmed)
         {
             return;
         }
@@ -232,6 +250,7 @@ public sealed class MachineListViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = $"Errore imprevisto: {ex.Message}";
+            _messageService.ShowError("Errore", ex.Message);
         }
     }
 

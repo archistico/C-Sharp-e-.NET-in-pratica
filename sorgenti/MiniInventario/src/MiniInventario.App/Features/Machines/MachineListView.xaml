@@ -7,7 +7,7 @@
              d:DesignHeight="650"
              d:DesignWidth="1100">
 
-    <Grid Margin="20">
+    <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -16,44 +16,72 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="MiniInventario"
-                       FontSize="28"
-                       FontWeight="SemiBold"/>
+        <Border Grid.Row="0"
+                Background="White"
+                CornerRadius="8"
+                Padding="20"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1"
+                Margin="0,0,0,16">
 
-            <TextBlock Text="Gestione semplice di macchine, utenti assegnati e posizioni"
-                       FontSize="14"
-                       Foreground="#666666"
-                       Margin="0,4,0,0"/>
-        </StackPanel>
+            <StackPanel>
+                <TextBlock Text="MiniInventario"
+                           FontSize="30"
+                           FontWeight="SemiBold"
+                           Foreground="#0F172A"/>
+
+                <TextBlock Text="Gestione semplice di macchine, utenti assegnati e posizioni"
+                           FontSize="14"
+                           Foreground="#64748B"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
 
         <!-- Barra ricerca/comandi -->
-        <Grid Grid.Row="1" Margin="0,0,0,16">
+        <Grid Grid.Row="1"
+                Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0"
-                     Height="34"
-                     VerticalContentAlignment="Center"
-                     FontSize="14"
-                     Padding="10,0"
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                     ToolTip="Cerca per nome macchina, utente o posizione"/>
+            <Grid Grid.Column="0">
+                <TextBox Height="36"
+                         FontSize="14"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Cerca per nome macchina, utente o posizione"/>
+
+                <TextBlock Text="Cerca per nome macchina, utente o posizione..."
+                           Foreground="#94A3B8"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center"
+                           IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSearchEmpty}"
+                                        Value="True">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
 
             <Button Grid.Column="1"
                     Content="Nuova macchina"
-                    Width="130"
-                    Height="34"
+                    Width="140"
                     Margin="10,0,0,0"
                     Command="{Binding NewCommand}"/>
 
             <Button Grid.Column="2"
                     Content="Aggiorna"
-                    Width="90"
-                    Height="34"
+                    Width="100"
                     Margin="10,0,0,0"
                     Command="{Binding RefreshCommand}"/>
         </Grid>
@@ -68,48 +96,89 @@
 
             <!-- Lista -->
             <Border Grid.Column="0"
-                    BorderBrush="#DDDDDD"
+                    Background="White"
+                    BorderBrush="#E2E8F0"
                     BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="10">
+                    CornerRadius="8"
+                    Padding="12">
 
-                <DataGrid ItemsSource="{Binding Machines}"
-                          SelectedItem="{Binding SelectedMachine, Mode=TwoWay}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          SelectionMode="Single"
-                          SelectionUnit="FullRow"
-                          HeadersVisibility="Column"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          GridLinesVisibility="Horizontal">
+                <Grid>
+                    <DataGrid ItemsSource="{Binding Machines}"
+                              SelectedItem="{Binding SelectedMachine, Mode=TwoWay}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              GridLinesVisibility="Horizontal"
+                              AlternationCount="2">
 
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Nome macchina"
-                                            Binding="{Binding Name}"
-                                            Width="2*"/>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nome macchina"
+                                                Binding="{Binding Name}"
+                                                Width="2*"/>
 
-                        <DataGridTextColumn Header="Utente"
-                                            Binding="{Binding AssignedUser}"
-                                            Width="1.5*"/>
+                            <DataGridTextColumn Header="Utente"
+                                                Binding="{Binding AssignedUser}"
+                                                Width="1.5*"/>
 
-                        <DataGridTextColumn Header="Posizione"
-                                            Binding="{Binding Location}"
-                                            Width="1.5*"/>
+                            <DataGridTextColumn Header="Posizione"
+                                                Binding="{Binding Location}"
+                                                Width="1.5*"/>
 
-                        <DataGridTextColumn Header="Ultima modifica"
-                                            Binding="{Binding UpdatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
-                                            Width="150"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                            <DataGridTextColumn Header="Ultima modifica"
+                                                Binding="{Binding UpdatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                                Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Border Background="#F8FAFC"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Machines.Count}"
+                                            Value="0">
+                                        <Setter Property="Visibility"
+                                                Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+
+                        <StackPanel>
+                            <TextBlock Text="Nessuna macchina presente"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="#334155"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Inserisci una nuova macchina usando il pannello a destra."
+                                       Foreground="#64748B"
+                                       Margin="0,6,0,0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
             </Border>
 
             <!-- Dettaglio -->
             <Border Grid.Column="2"
-                    BorderBrush="#DDDDDD"
+                    Background="White"
+                    BorderBrush="#E2E8F0"
                     BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="16">
+                    CornerRadius="8"
+                    Padding="18">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -124,39 +193,53 @@
 
                     <TextBlock Grid.Row="0"
                                Text="{Binding FormTitle}"
-                               FontSize="20"
+                               FontSize="21"
                                FontWeight="SemiBold"
-                               Margin="0,0,0,16"/>
+                               Foreground="#0F172A"
+                               Margin="0,0,0,18"/>
 
-                    <StackPanel Grid.Row="1" Margin="0,0,0,10">
-                        <TextBlock Text="Nome macchina"/>
+                    <StackPanel Grid.Row="1"
+                            Margin="0,0,0,12">
+                        <TextBlock Text="Nome macchina"
+                                   Foreground="#334155"
+                                   FontWeight="SemiBold"/>
                         <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="30"
-                                 Margin="0,4,0,0"/>
+                                 Height="32"
+                                 Margin="0,5,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="2" Margin="0,0,0,10">
-                        <TextBlock Text="Utente assegnato"/>
+                    <StackPanel Grid.Row="2"
+                            Margin="0,0,0,12">
+                        <TextBlock Text="Utente assegnato"
+                                   Foreground="#334155"
+                                   FontWeight="SemiBold"/>
                         <TextBox Text="{Binding AssignedUser, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="30"
-                                 Margin="0,4,0,0"/>
+                                 Height="32"
+                                 Margin="0,5,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="3" Margin="0,0,0,10">
-                        <TextBlock Text="Posizione"/>
+                    <StackPanel Grid.Row="3"
+                            Margin="0,0,0,12">
+                        <TextBlock Text="Posizione"
+                                   Foreground="#334155"
+                                   FontWeight="SemiBold"/>
                         <TextBox Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="30"
-                                 Margin="0,4,0,0"/>
+                                 Height="32"
+                                 Margin="0,5,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="4" Margin="0,0,0,10">
-                        <TextBlock Text="Note"/>
+                    <StackPanel Grid.Row="4"
+                            Margin="0,0,0,12">
+                        <TextBlock Text="Note"
+                                   Foreground="#334155"
+                                   FontWeight="SemiBold"/>
                         <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                                  Height="120"
                                  AcceptsReturn="True"
                                  TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto"
-                                 Margin="0,4,0,0"/>
+                                 VerticalContentAlignment="Top"
+                                 Margin="0,5,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Row="5"
@@ -166,24 +249,77 @@
 
                         <Button Content="Salva"
                                 Width="90"
-                                Height="34"
                                 Command="{Binding SaveCommand}"/>
 
                         <Button Content="Elimina"
                                 Width="90"
-                                Height="34"
                                 Margin="10,0,0,0"
+                                Background="#DC2626"
+                                BorderBrush="#B91C1C"
                                 Command="{Binding DeleteCommand}"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="6" Margin="0,16,0,0">
-                        <TextBlock Text="{Binding ErrorMessage}"
-                                   Foreground="DarkRed"
-                                   TextWrapping="Wrap"/>
+                    <StackPanel Grid.Row="6"
+                            Margin="0,16,0,0">
 
-                        <TextBlock Text="{Binding StatusMessage}"
-                                   Foreground="DarkGreen"
-                                   TextWrapping="Wrap"/>
+                        <Border Background="#FEF2F2"
+                                BorderBrush="#FECACA"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="10"
+                                Margin="0,0,0,8">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ErrorMessage}"
+                                                Value="">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ErrorMessage}"
+                                                Value="{x:Null}">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="#991B1B"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+
+                        <Border Background="#ECFDF5"
+                                BorderBrush="#BBF7D0"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="10">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StatusMessage}"
+                                                Value="">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding StatusMessage}"
+                                                Value="{x:Null}">
+                                            <Setter Property="Visibility"
+                                                    Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       Foreground="#166534"
+                                       TextWrapping="Wrap"/>
+                        </Border>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -191,8 +327,8 @@
 
         <!-- Footer -->
         <TextBlock Grid.Row="3"
-                   Text="Dati salvati localmente in Data/machines.json"
-                   Foreground="#777777"
+                   Text="Dati salvati localmente in %AppData%\MiniInventario\machines.json"
+                   Foreground="#64748B"
                    FontSize="12"
                    Margin="0,12,0,0"/>
     </Grid>
