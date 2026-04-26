@@ -1,0 +1,25 @@
+﻿using System.IO;
+using System.Windows;
+using MiniInventario.App.Features.Machines;
+using MiniInventario.Core.Features.Machines;
+using MiniInventario.Core.Infrastructure.Storage;
+
+namespace MiniInventario.App;
+
+public partial class MainWindow : Window
+{
+    public MainWindow()
+    {
+        InitializeComponent();
+
+        var dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+        var jsonFilePath = Path.Combine(dataDirectory, "machines.json");
+
+        var storage = new JsonMachineStorage(jsonFilePath);
+        var repository = new MachineRepository(storage);
+        var validator = new MachineValidator();
+        var service = new MachineService(repository, validator);
+
+        MachineList.DataContext = new MachineListViewModel(service);
+    }
+}

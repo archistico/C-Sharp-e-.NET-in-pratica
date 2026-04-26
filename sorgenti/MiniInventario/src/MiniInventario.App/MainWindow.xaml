@@ -1,0 +1,13 @@
+﻿<Window x:Class="MiniInventario.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:machines="clr-namespace:MiniInventario.App.Features.Machines"
+        Title="MiniInventario"
+        Height="720"
+        Width="1180"
+        MinHeight="600"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen">
+
+    <machines:MachineListView x:Name="MachineList"/>
+</Window>

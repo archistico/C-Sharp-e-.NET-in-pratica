@@ -1,0 +1,199 @@
+<UserControl x:Class="MiniInventario.App.Features.Machines.MachineListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="650"
+             d:DesignWidth="1100">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="MiniInventario"
+                       FontSize="28"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Gestione semplice di macchine, utenti assegnati e posizioni"
+                       FontSize="14"
+                       Foreground="#666666"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Barra ricerca/comandi -->
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Height="34"
+                     VerticalContentAlignment="Center"
+                     FontSize="14"
+                     Padding="10,0"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Cerca per nome macchina, utente o posizione"/>
+
+            <Button Grid.Column="1"
+                    Content="Nuova macchina"
+                    Width="130"
+                    Height="34"
+                    Margin="10,0,0,0"
+                    Command="{Binding NewCommand}"/>
+
+            <Button Grid.Column="2"
+                    Content="Aggiorna"
+                    Width="90"
+                    Height="34"
+                    Margin="10,0,0,0"
+                    Command="{Binding RefreshCommand}"/>
+        </Grid>
+
+        <!-- Corpo principale -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="1.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Lista -->
+            <Border Grid.Column="0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10">
+
+                <DataGrid ItemsSource="{Binding Machines}"
+                          SelectedItem="{Binding SelectedMachine, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow"
+                          HeadersVisibility="Column"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          GridLinesVisibility="Horizontal">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nome macchina"
+                                            Binding="{Binding Name}"
+                                            Width="2*"/>
+
+                        <DataGridTextColumn Header="Utente"
+                                            Binding="{Binding AssignedUser}"
+                                            Width="1.5*"/>
+
+                        <DataGridTextColumn Header="Posizione"
+                                            Binding="{Binding Location}"
+                                            Width="1.5*"/>
+
+                        <DataGridTextColumn Header="Ultima modifica"
+                                            Binding="{Binding UpdatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                            Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Dettaglio -->
+            <Border Grid.Column="2"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="16">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding FormTitle}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,16"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                        <TextBlock Text="Nome macchina"/>
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="30"
+                                 Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                        <TextBlock Text="Utente assegnato"/>
+                        <TextBox Text="{Binding AssignedUser, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="30"
+                                 Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                        <TextBlock Text="Posizione"/>
+                        <TextBox Text="{Binding Location, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="30"
+                                 Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4" Margin="0,0,0,10">
+                        <TextBlock Text="Note"/>
+                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="120"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="5"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="0,10,0,0">
+
+                        <Button Content="Salva"
+                                Width="90"
+                                Height="34"
+                                Command="{Binding SaveCommand}"/>
+
+                        <Button Content="Elimina"
+                                Width="90"
+                                Height="34"
+                                Margin="10,0,0,0"
+                                Command="{Binding DeleteCommand}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="6" Margin="0,16,0,0">
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Foreground="DarkRed"
+                                   TextWrapping="Wrap"/>
+
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   Foreground="DarkGreen"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Footer -->
+        <TextBlock Grid.Row="3"
+                   Text="Dati salvati localmente in Data/machines.json"
+                   Foreground="#777777"
+                   FontSize="12"
+                   Margin="0,12,0,0"/>
+    </Grid>
+</UserControl>
