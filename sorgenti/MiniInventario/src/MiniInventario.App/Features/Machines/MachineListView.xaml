@@ -327,8 +327,8 @@
 
         <!-- Footer -->
         <TextBlock Grid.Row="3"
-                   Text="Dati salvati localmente in %AppData%\MiniInventario\machines.json"
-                   Foreground="#64748B"
+                   Text="Dati salvati localmente in Data/machines.json"
+                   Foreground="#777777"
                    FontSize="12"
                    Margin="0,12,0,0"/>
     </Grid>

@@ -13,16 +13,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        var appDataDirectory = Environment.GetFolderPath(
-            Environment.SpecialFolder.ApplicationData);
-
-        var dataDirectory = Path.Combine(
-            appDataDirectory,
-            "MiniInventario");
-
-        var jsonFilePath = Path.Combine(
-            dataDirectory,
-            "machines.json");
+        var dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+        var jsonFilePath = Path.Combine(dataDirectory, "machines.json");
 
         var storage = new JsonMachineStorage(jsonFilePath);
         var repository = new MachineRepository(storage);
